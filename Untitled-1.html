@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strawberry Quiz 🍓</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #ffe6f2, #d7ecff, #c6ffe2);
+      background-size: 300% 300%;
+      animation: gradientShift 12s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .quiz-container {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 25px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 650px;
+      padding: 40px;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+      backdrop-filter: blur(12px);
+      position: relative;
+    }
+
+    .header {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ff7aa8, #b2ebf2, #aaffc3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 10px rgba(255, 182, 193, 0.5);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #444;
+      margin-bottom: 20px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 25px;
+    }
+
+    .option-btn {
+      width: 90%;
+      background: linear-gradient(135deg, #f8f9fa, #eef7ff);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+      transition: all 0.25s ease;
+    }
+
+    .option-btn:hover {
+      background: linear-gradient(135deg, #ffd6ec, #d8f8ff);
+      box-shadow: 0 3px 10px rgba(255, 182, 193, 0.3);
+      transform: scale(1.03);
+    }
+
+    .option-btn.correct {
+      background: linear-gradient(135deg, #c6ffd8, #a3f1b9);
+      border-color: #54c96d;
+      color: #165d2f;
+      box-shadow: 0 4px 15px rgba(100, 255, 150, 0.4);
+    }
+
+    .option-btn.wrong {
+      background: linear-gradient(135deg, #ffd2d2, #ffcaca);
+      border-color: #ff7070;
+      color: #6b1b1b;
+      box-shadow: 0 4px 15px rgba(255, 100, 100, 0.4);
+    }
+
+    .message {
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: #555;
+      min-height: 40px;
+      margin-top: 10px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .next-btn, .restart-btn {
+      background: linear-gradient(135deg, #ffb6c1, #b2ebf2, #c8ffd4);
+      border: none;
+      color: #333;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 25px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .next-btn.show {
+      display: inline-block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .next-btn:hover, .restart-btn:hover {
+      transform: scale(1.07);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .score {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-top: 25px;
+      color: #444;
+    }
+
+    .love-msg {
+      font-size: 1.2rem;
+      color: #ff6f91;
+      margin-top: 15px;
+      font-weight: 600;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="header">🍓 Strawberry Quiz 🍓</div>
+    <h1 id="question">Loading...</h1>
+    <div class="options" id="options"></div>
+    <p class="message" id="message"></p>
+    <div class="buttons">
+      <button class="next-btn" id="nextBtn">Next ➜</button>
+      <button class="restart-btn" id="restartBtn" style="display:none;">Play Again 💫</button>
+    </div>
+    <div class="score" id="score"></div>
+    <div class="love-msg" id="loveMsg"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      { question: "Who complains when naiyo?", options: ["Amna", "Mustfa", "Neither"], correct: ["Mustfa"], correctMsg: "WOTTTTT…pani thanda hota haaa", wrongMsg: "YOUUU!!?? Miss lemon max bar!??" },
+      { question: "Does holding susu explodes bladder?", options: ["Yes", "No", "Maybe"], correct: ["Yes"], correctMsg: "Susu leaks everywhere….time for susu bath!?", wrongMsg: "Hainnnn!?? Competition k waqt to ap ka bladder explode hone wala tha..Loser" },
+      { question: "1v1 Peenar fight, who would win?", options: ["Amna The Peenarist", "Mustfa", "Draw"], correct: ["Amna The Peenarist"], correctMsg: "19.5 Inches of pure madness and badness", wrongMsg: "okay, u may put my peenar in the peenar explosion chamber😭" },
+      { question: "Who is more likely to cheat in a board game?", options: ["Amna", "Mustfa", "Neither"], correct: ["Amna"], correctMsg: "Bachuuuuu ye apki tang k neeche cards kiya ker rahe hain😱!??", wrongMsg: "Nah…I’ll just be wondering k cards ja kahan rae hain😭" },
+      { question: "Have u ever or do u susu mid naiyo?", options: ["Yes", "No", "Absolutely No", "Maybe"], correct: ["Yes", "Maybe"], correctMsg: "WTF!!!but wtv…YAAAYYYY SUSU BATHHHHHHH for me", wrongMsg: "Hmmm so you’ve never like even thought about it?" },
+      { question: "What’s the most unhinged thing you’ve done when you missed me??", options: ["Idk u tell this"], correct: ["Idk u tell this"], correctMsg: "Wotttttt I wanna know thissssss", wrongMsg: "" },
+      { question: "What’s the most random thing you’ve imagined us doing together??", options: ["Imagined meeting on a random wedding","Grocery shopping","Dancing in the Kitchen","Other"], correct: ["Other"], correctMsg: "Yesssssss I knew ittttt…u got the most yummiest imaginationnn", wrongMsg: "LIEEE…..You’ve imagined much worseeeeee" },
+      { question: "Choose one?", options: ["Pineapple on Pizza","Rice with ketchup"], correct: ["Pineapple on Pizza","Rice with ketchup"], correctMsg: "WTF …EWWWW NOOO..WHAT’S DAT BROTHERR", wrongMsg: "" },
+      { question: "If your phone could talk, what would it say about our chats??", options: ["They Never stop talking","They fight too much","EWWW WTF IS THIS SUSU TALK"], correct: ["EWWW WTF IS THIS SUSU TALK"], correctMsg: "Wottttt….it’s hilarious waseeee", wrongMsg: "U chose this over our susu chats…are u a caterpillar?" },
+      { question: "Who’s more likely to forget their own joke mid-laugh??", options: ["Amna","Mustfa","Neither"], correct: ["Amna"], correctMsg: "BLEH….*twerking intensifies* 🤣", wrongMsg: "Me!!???...." },
+      { question: "Would you rather?", options: ["Kiss Mustfa for a lifetime pizza slice","Slap Mustfa for a piece of cake","Neither"], correct: ["Kiss Mustfa for a lifetime pizza slice"], correctMsg: "🤣 🤣  I had to give lalach…BWHAHAHA", wrongMsg: "WDYM!?? It’s just a small slice…look at the pizza sideeee" },
+      { question: "Who’s more ticklish?", options: ["Amna","Mustfa","Neither"], correct: ["Amna"], correctMsg: "BWHAHAHA..i’ll get murdered but BWAHAHAHAA", wrongMsg: "BACHUUU mane jab gudgudi ki naaaaaaaa" },
+      { question: "Who’s more likely to plan a silly prank?", options: ["Amna","Mustfa","Neither"], correct: ["Amna"], correctMsg: "Silly!!???? U gonna plan the most evil prank known to mankind", wrongMsg: "You’ll kill me won’t you" }
+    ];
+
+    let current = 0;
+    let score = 0;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const messageEl = document.getElementById("message");
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const scoreEl = document.getElementById("score");
+    const loveMsgEl = document.getElementById("loveMsg");
+
+    const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+    const loadQuestion = () => {
+      const q = quizData[current];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      messageEl.textContent = "";
+      nextBtn.classList.remove("show");
+      const shuffledOptions = shuffle([...q.options]);
+      shuffledOptions.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.classList.add("option-btn");
+        btn.textContent = opt;
+        btn.addEventListener("click", () => selectOption(btn, opt, q));
+        optionsEl.appendChild(btn);
+      });
+    };
+
+    const selectOption = (btn, opt, q) => {
+      nextBtn.classList.add("show");
+      if (btn.classList.contains("correct") || btn.classList.contains("wrong")) return;
+      const isCorrect = q.correct.includes(opt);
+      btn.classList.add(isCorrect ? "correct" : "wrong");
+      messageEl.textContent = isCorrect ? q.correctMsg : q.wrongMsg;
+      if (isCorrect) score++;
+    };
+
+    nextBtn.addEventListener("click", () => {
+      current++;
+      if (current < quizData.length) {
+        loadQuestion();
+      } else {
+        showScore();
+      }
+    });
+
+    const showScore = () => {
+      questionEl.textContent = "Quiz Finished! 🎉";
+      optionsEl.innerHTML = "";
+      messageEl.textContent = "";
+      scoreEl.textContent = `You got ${score} / ${quizData.length} correct 🍓`;
+      loveMsgEl.textContent = "I love you a lot ❤️";
+      nextBtn.style.display = "none";
+      restartBtn.style.display = "inline-block";
+    };
+
+    restartBtn.addEventListener("click", () => {
+      current = 0;
+      score = 0;
+      scoreEl.textContent = "";
+      loveMsgEl.textContent = "";
+      nextBtn.style.display = "inline-block";
+      restartBtn.style.display = "none";
+      shuffle(quizData);
+      loadQuestion();
+    });
+
+    shuffle(quizData);
+    loadQuestion();
+  </script>
+</body>
+</html>
